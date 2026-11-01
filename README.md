@@ -10,6 +10,26 @@ A lightweight Android TV front end with a Netflix-inspired **original** dark UI,
 
 ![JosJisTV original TV interface concept](assets/ui-concept.png)
 
+## v1.0.2 — Android TV / TV Box launcher compatibility
+
+Fix for reports that Android TV reports installation complete but shows no **Open/Buka** button.
+
+- The same `MainActivity` can be launched via either `android.intent.category.LEANBACK_LAUNCHER` (Android TV home) or standard `android.intent.category.LAUNCHER` (TV boxes, alternate launchers, installers).
+- Declares Leanback as an optional device feature so the APK can also be sideloaded on compatible AOSP TV boxes that do not expose it.
+- Gives the *Beranda* navigation item initial remote focus.
+- Updated `versionCode` to `2` and `versionName` to `1.0.2`.
+
+**Install:** Build using GitHub Actions, unzip the `JosJisTV-debug-apk` artifact, then install `app-debug.apk`. Check the TV home screen's *Apps / Aplikasi* screen. Some installer apps show only **Done / Selesai** even when the app is launchable; launcher support depends on the TV model.
+
+**Debug if the app opens and immediately closes:** Enable developer options and USB/network debugging, connect ADB and run:
+
+```bash
+adb shell am start -n com.josjis.tv/.MainActivity
+adb logcat -d -s AndroidRuntime:E ActivityTaskManager:I
+```
+
+Look for `FATAL EXCEPTION` or `com.josjis.tv` and share the relevant lines. A launcher fix will not solve unrelated runtime crashes or unsupported Android versions (minimum Android 6.0 / API 23).
+
 ## Fitur / Features
 
 - Full-screen Android TV launcher (Leanback), landscape, original dark cinematic layout

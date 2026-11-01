@@ -36,12 +36,15 @@ public final class MainActivity extends Activity {
     private TextView seasonValue;
     private TextView episodeValue;
     private String detailKey;
+    private TextView homeNavigation;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state); user = new UserStore(this);
         getWindow().getDecorView().setSystemUiVisibility(5894 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         sections = catalog.demoSections();
         createShell(); showHome();
+        // Give the remote an initial focusable element on Android TV / AOSP TV boxes.
+        if (homeNavigation != null) homeNavigation.requestFocus();
         refreshCatalog();
     }
 
@@ -71,6 +74,7 @@ public final class MainActivity extends Activity {
         TextView b = Design.text(this, label, 14, Design.MUTED, true);
         b.setGravity(Gravity.CENTER); b.setPadding(d(13),0,d(13),0);
         b.setFocusable(true); b.setClickable(true);
+        if ("home".equals(destination)) homeNavigation = b;
         b.setOnClickListener(v -> navigate(destination));
         b.setOnFocusChangeListener((v, focused) -> {
             b.setTextColor(focused ? Design.BG : Design.MUTED);

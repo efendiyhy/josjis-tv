@@ -38,6 +38,9 @@ jobs:
       - name: Verify FrameXTV URL generation
         run: bash scripts/check-links.sh
 
+      - name: Verify Android TV launcher manifest
+        run: python3 tests/check-manifest.py
+
       - name: Build debug APK
         run: gradle --no-daemon --stacktrace assembleDebug
 
