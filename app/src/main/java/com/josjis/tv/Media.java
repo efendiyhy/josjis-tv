@@ -25,10 +25,13 @@ public final class Media {
 
     public String key() { return type + ":" + id; }
     public String kind() { return "tv".equals(type) ? "SERIAL" : "FILM"; }
+
     public String image(String size, boolean backdropImage) {
         String path = backdropImage ? backdrop : poster;
-        if (path == null || path.isEmpty() || path.equals("null") || !path.startsWith("/")) return "";
-        return "https://image.tmdb.org/t/p/" + size + path;
+        if (path == null || path.isEmpty() || path.equals("null")) return "";
+        if (path.startsWith("http://") || path.startsWith("https://")) return path;
+        if (path.startsWith("/")) return "https://image.tmdb.org/t/p/" + size + path;
+        return "";
     }
 
     public JSONObject toJson() {

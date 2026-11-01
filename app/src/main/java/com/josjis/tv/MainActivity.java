@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -36,15 +35,12 @@ public final class MainActivity extends Activity {
     private TextView seasonValue;
     private TextView episodeValue;
     private String detailKey;
-    private TextView homeNavigation;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state); user = new UserStore(this);
         getWindow().getDecorView().setSystemUiVisibility(5894 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         sections = catalog.demoSections();
         createShell(); showHome();
-        // Give the remote an initial focusable element on Android TV / AOSP TV boxes.
-        if (homeNavigation != null) homeNavigation.requestFocus();
         refreshCatalog();
     }
 
@@ -74,7 +70,6 @@ public final class MainActivity extends Activity {
         TextView b = Design.text(this, label, 14, Design.MUTED, true);
         b.setGravity(Gravity.CENTER); b.setPadding(d(13),0,d(13),0);
         b.setFocusable(true); b.setClickable(true);
-        if ("home".equals(destination)) homeNavigation = b;
         b.setOnClickListener(v -> navigate(destination));
         b.setOnFocusChangeListener((v, focused) -> {
             b.setTextColor(focused ? Design.BG : Design.MUTED);
@@ -129,7 +124,7 @@ public final class MainActivity extends Activity {
         TextView eyebrow = Design.text(this,"JOSJISTV  /  UNGGULAN",13,Design.ACCENT,true);
         eyebrow.setLetterSpacing(0.17f); text.addView(eyebrow,lp(-2,30));
         TextView title = Design.text(this,item.title,44,Design.WHITE,true); title.setMaxLines(2); text.addView(title,lp(-1,-2));
-        TextView meta = Design.text(this, item.kind()+"   •   "+item.year+"   •   Katalog TMDB",13,Design.MUTED,false);
+        TextView meta = Design.text(this, item.kind()+"   •   "+item.year+"   •   Katalog JosJisTV",13,Design.MUTED,false);
         text.addView(meta,lp(-1,28));
         TextView desc = Design.text(this,item.overview,15,Design.WHITE,false); desc.setMaxLines(2);
         LinearLayout.LayoutParams descLp = lp(-1,48); descLp.rightMargin=d(300); text.addView(desc,descLp);
@@ -145,7 +140,7 @@ public final class MainActivity extends Activity {
         if (items.isEmpty()) return;
         TextView header = Design.text(this,title,23,Design.WHITE,true);
         header.setPadding(d(40),d(14),0,d(12)); column.addView(header,lp(-1,58));
-        HorizontalScrollView scroll = new HorizontalScrollView(this);
+        TvHorizontalScrollView scroll = new TvHorizontalScrollView(this);
         scroll.setClipToPadding(false); scroll.setHorizontalScrollBarEnabled(false);
         LinearLayout strip = horizontal(); strip.setPadding(d(40),d(4),d(38),d(14));
         for (Media media: items) { strip.addView(tile(media)); space(strip,15); }
@@ -219,7 +214,7 @@ public final class MainActivity extends Activity {
     }
     private void showSearch() {
         page="search"; ScrollView scroll=newScroll(); LinearLayout body=vertical(); body.setPadding(0,d(25),0,0);
-        bigTitle(body,"Cari tontonan","Cari film dan serial dari TMDB (atau katalog contoh jika tanpa token).");
+        bigTitle(body,"Cari tontonan","Cari film dan serial. JosJisTV sekarang membawa katalog bawaan, dan bisa ditambah TMDB bila token diisi.");
         LinearLayout inputRow=horizontal(); inputRow.setPadding(d(40),0,0,0);
         EditText input=new EditText(this); input.setSingleLine(true); input.setTextColor(Color.WHITE);
         input.setTextSize(18); input.setHintTextColor(Design.MUTED); input.setHint("Judul film atau serial...");
@@ -251,7 +246,7 @@ public final class MainActivity extends Activity {
     }
     private void showSettings() {
         page="settings"; ScrollView scroll=newScroll(); LinearLayout body=vertical(); body.setPadding(0,d(25),d(30),0);
-        bigTitle(body,"Pengaturan","Katalog aktual membutuhkan TMDB API Key atau Read Access Token Anda sendiri.");
+        bigTitle(body,"Pengaturan","Aplikasi sudah siap dengan katalog bawaan. Token TMDB hanya opsional jika Anda ingin daftar yang lebih dinamis.");
         TextView label=Design.text(this,"TMDB API Key / Read Access Token",18,Design.WHITE,true);
         label.setPadding(d(40),0,0,0); body.addView(label,lp(-1,42));
         EditText token=new EditText(this); token.setSingleLine(true); token.setText(user.token());
@@ -270,6 +265,7 @@ public final class MainActivity extends Activity {
         }),lp(-2,54));
         body.addView(actions); gap(body,22);
         message(body,"Catatan: token disimpan hanya di penyimpanan lokal aplikasi. Untuk distribusi APK publik, gunakan backend perantara untuk melindungi kredensial Anda.");
+        message(body,"Katalog bawaan JosJisTV sudah dapat digunakan tanpa token. Token TMDB hanya dipakai untuk memperkaya katalog dan pencarian online.");
         message(body,"FrameXTV: https://framextv.xyz/embed/{tmdbId} — untuk serial: /{tmdbId}/{season}/{episode}.");
         message(body,"This product uses the TMDB API but is not endorsed or certified by TMDB.");
         message(body,"TMDB: https://www.themoviedb.org (data dan artwork). Untuk distribusi publik, ikuti persyaratan atribusi/logo TMDB.");
